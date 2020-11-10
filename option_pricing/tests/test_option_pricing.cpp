@@ -1,5 +1,5 @@
 #include <iostream>
-#include"option_pricing.cpp"
+#include "../option_pricing.h"
 
 using namespace std;
 
@@ -11,7 +11,11 @@ int main(int argc, char* argv[])
 
     cout << "SLIDES TEST \n\n";
 
-    OptionPricing option1(100, 1.1, 0.9, 1.0, 0.0);
+    ConstGetter<float> U1(1.1);
+    ConstGetter<float> D1(0.9);
+    ConstGetter<float> R1(0.0);
+
+    OptionPricing option1(100, &U1, &D1, 1.0, &R1);
 
     cout << "p1: \n"
         << "\tResult: " << option1.Price1(0) << '\n'
@@ -31,7 +35,7 @@ int main(int argc, char* argv[])
     delete[] states1;
 
     cout << "european call K=100: \n" 
-        << "\tResult: " << option1.PriceOption(call, european, 100.0) << '\n'
+        << "\tResult: " << option1.PriceOption(call, european,  100.0) << '\n'
         << "\tCorrect: " << 5 << '\n';                       
                                                              
     cout << "european put K=100: \n"                         
@@ -39,7 +43,7 @@ int main(int argc, char* argv[])
         << "\tCorrect: " << 5 << '\n';                       
                                                              
     cout << "american call K=90: \n"                         
-        << "\tResult: " << option1.PriceOption(call, american, 90.0) << '\n'
+        << "\tResult: " << option1.PriceOption(call, american,  90.0) << '\n'
         << "\tCorrect: " << 10 << '\n';                       
                                                              
     cout << "american put K=110: \n"                         
@@ -52,8 +56,11 @@ int main(int argc, char* argv[])
 
     cout << "\nEXCEL TEST \n\n";
 
-    OptionPricing option2(100, 1.05, 1/1.05, 0.5, 0.02);
-    option2.setK(110.0);
+    ConstGetter<float> U2(1.05);
+    ConstGetter<float> D2(1/1.05);
+    ConstGetter<float> R2(0.02);
+
+    OptionPricing option2(100, &U2, &D2, 1.0, &R2);
 
     cout << "p1: \n"
         << "\tResult: " << option2.Price1(0) << '\n'
@@ -73,19 +80,19 @@ int main(int argc, char* argv[])
     delete[] states2;
 
     cout << "european call K=110: \n" 
-        << "\tResult: " << option2.PriceOption(call, european) << '\n'
+        << "\tResult: " << option2.PriceOption(call, european,  110.0) << '\n'
         << "\tCorrect: " << 0.08552106 << '\n';                       
                                                              
     cout << "european put K=110: \n"                         
-        << "\tResult: " << option2.PriceOption(put, european) << '\n'
+        << "\tResult: " << option2.PriceOption(put, european, 110.0) << '\n'
         << "\tCorrect: " << 7.90737512 << '\n';                       
                                                              
     cout << "american call K=110: \n"                         
-        << "\tResult: " << option2.PriceOption(call, american) << '\n'
+        << "\tResult: " << option2.PriceOption(call, american,  110.0) << '\n'
         << "\tCorrect: " << 0.08552106 << '\n';                       
                                                              
     cout << "american put K=110: \n"                         
-        << "\tResult: " << option2.PriceOption(put, american) << '\n'
+        << "\tResult: " << option2.PriceOption(put, american, 110.0) << '\n'
         << "\tCorrect: " << 10 << '\n';
 
 

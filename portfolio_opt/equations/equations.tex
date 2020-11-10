@@ -1,0 +1,154 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb}
+
+\begin{document}
+Holding Period Return: $ HPS = \frac{P_{t+1} - P_{t} + D_{t+1}}{P_{t}} $
+
+Real Interest Rate: $ r_{real} = r_{nominal} - i $
+
+Utility: $ U = E(r) - 0.5A\sigma^{2} $
+
+where
+\begin{itemize}
+
+    \item A - measures the degree of risk aversion
+
+\end{itemize}
+
+Expected Return from Combinations: $ E(r_c) = yE(r_p) + (1 - y)r_f $
+
+Variance from Combinations: $ var(r_c) = var((1-y)r_f + yr_p) = var(yr_p) = y^2\sigma^2_p $
+
+Standard Deviation from Combinations: $ \sigma_c = y\sigma_p $
+
+where
+\begin{itemize}
+
+    \item $r_c$ is the combined portfolio of stocks and t-bills
+
+\end{itemize}
+
+Capital Allocation Line (CAL):
+
+\begin{align*}
+    E(r_c) 
+    &= yE(r_p) + (1 - y)r_f \\
+    &= r_f + \sigma_c\frac{(E(r_p) - r_f)}{\sigma_p} 
+\end{align*}
+
+where
+\begin{itemize}
+
+    \item $ y = \frac{\sigma_c}{\sigma_p} $
+
+\end{itemize}
+
+Max Utility Portfolio: $ y = \frac{E(r_p) - r_f}{A\sigma^2_p} $
+
+Weighted Mean: $ E(r_p) = \sum^{N}_{i=1} w_iE(r_i) $
+
+Weighted Variance :
+
+\begin{align*}
+    \sigma^2_p 
+    &= \sum^{N}_{i=1} \sum^{N}_{j=1} w_i w_j \sigma{ij} \\
+    &= w^2_1\sigma^2_{11} + \ldots + w^2_n \sigma^2_{NN} \\
+    &+ 2(w_1w_2\sigma_{12} + \ldots + w_1 w_N \sigma_{1N} + \ldots + w_2 w_3 \sigma_{23} + \ldots + w_{N-1} w_N \sigma_{N-1, N})
+\end{align*}
+
+Two Portfolio Weighted Average:
+
+if correlation is 1: $ \sigma_p = w_D\sigma_D - w_E\sigma_E $
+
+if correlation is -1: $ | \sigma_p = w_D\sigma_D - w_E\sigma_E | $
+
+CAPM Returns
+
+\begin{align*}
+    E(r_i) 
+    &= r_f + cov(r_i, r_m)\frac{(E(r_m) - r_f)}{\sigma^2_m} \\
+    &= r_f + \beta_i(E(r_m) - r_f)
+\end{align*}
+
+where
+\begin{itemize}
+
+    \item $r_i$ is the return on asset i
+
+    \item $\sigma^2_m$ is the market variance
+
+    \item $r_f$ is the risk free rate
+
+    \item $ \beta_i = \frac{cov(r_i, r_f)}{\sigma^2_m} $
+
+    \item $ E(r_m) - r_f $ is the market risk premium and slope
+
+\end{itemize}
+
+Weighted Beta: $ \sum w_i\beta_i $
+
+Single Index Model: $ R_i = \alpha_i + \beta_iR_m + e_i $
+
+where
+\begin{itemize}
+
+    \item $ R_i = (r_i - r_f) $ is the risk premium
+
+    \item $ R_m = (r_m - r_f) $ is the market risk premium
+
+    \item $ e_i $ is the firm specific component, not due to market movements
+
+    \item $ \alpha $ is the stock expected return if the market's exess return is zero
+
+    \item $ \beta_iR_m $
+
+    \item If $ \alpha_1 = 0 $ CAPM is working
+
+    \item If $ \alpha_1 < 0 $ then a security's return is too low
+
+    \item If $ \alpha_1 > 0 $ then a security's return is too high
+
+    \item These parmateters can be estimated using linear regression
+
+\end{itemize}
+
+Components of Risk: $ \sigma^2_i = \beta^2_i\sigma^2_m + \sigma^2(e_i) $
+
+Total Risk = Systematic Risk + Unsystematic Risk
+
+\begin{align*}
+    R^2 
+    &= \frac{\beta^2_i\sigma^2_m}{\sigma^2_i} \\
+    &= \frac{\beta^2_i\sigma^2_m}{\beta^2_i\sigma^2_m + \sigma^2(e_i)}
+\end{align*}
+
+where
+\begin{itemize}
+
+    \item $ \sigma^2_i $ is the total variance
+
+    \item $ \beta^2_i\sigma^2_m $ systematic variance
+
+    \item $ \sigma^2(e_i) $ is the unsystematic variance
+
+\end{itemize}
+
+Minimum Variance Two Asset Combination:
+
+\[
+    w_D = \frac
+        {\sigma^2_E - cov(r_D, r_E)}
+        {\sigma^2_D + \sigma^2_E - 2cov(r_D, r_E)}
+\]
+
+Max Sharpe Two Asset Combination:
+
+\[
+    w_D = \frac
+        {(r_D - r_f)\sigma^2_E - (r_D - r_E)cov(r_D, r_E)}
+        {(r_D - r_f)\sigma^2_D + (r_E - r_f)\sigma^2_E - (r_D - r_f + r_E - r_f)cov(r_D, r_E)}
+\]
+
+\end{document}

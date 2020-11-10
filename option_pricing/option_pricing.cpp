@@ -1,7 +1,13 @@
+#include <iostream>
+
 #include"option_pricing.h"
 
 // Constructor
-void OptionPricing::init(double S, double U, double D, double DeltaT, double *R)
+void OptionPricing::init(double S, 
+                         OptionPricing::FloatGetter U, 
+                         OptionPricing::FloatGetter D, 
+                         double DeltaT, 
+                         OptionPricing::FloatGetter R)
 {
     this->setS(S);
     this->setU(U);
@@ -9,43 +15,37 @@ void OptionPricing::init(double S, double U, double D, double DeltaT, double *R)
     this->setDeltaT(DeltaT);
     this->setR(R);
 }
-OptionPricing::OptionPricing(double S, double U, double D, double DeltaT, double *R)
+OptionPricing::OptionPricing(double S, 
+                             OptionPricing::FloatGetter U, 
+                             OptionPricing::FloatGetter D, 
+                             double DeltaT, 
+                             OptionPricing::FloatGetter R)
 {
     this->init(S, U, D, DeltaT, R);
 }
-OptionPricing::OptionPricing(double S, double U, double D, double DeltaT, double R)
-{
-    double *r;
-    int steps;
-
-    steps = int(round(1/DeltaT));
-
-    r = new double[steps+1];
-    fill_n(r, steps+1, R);
-
-    init(S, U, D, DeltaT, r);
-}
 OptionPricing::~OptionPricing()
 {
-    delete[] this->R;
+    delete this->U;
+    delete this->D;
+    delete this->R;
 }
 
 // Base Asset Coefficients
-double OptionPricing::Alpha1()
+double OptionPricing::Alpha1(int step)
 {
-    return -1/(this->getS()*(this->getU() - this->getD()));
+    return -1/(this->getS()*(this->getU(step) - this->getD(step)));
 }
-double OptionPricing::Alpha2()
+double OptionPricing::Alpha2(int step)
 {
-    return -this->Alpha1();
+    return -this->Alpha1(step);
 }
 double OptionPricing::Beta1(int step)
 {
-    return (this->BondRet(step)*this->getU())/(this->getU() - this->getD());
+    return (this->BondRet(step)*this->getU(step))/(this->getU(step) - this->getD(step));
 }
 double OptionPricing::Beta2(int step)
 {
-    return -(this->BondRet(step)*this->getD())/(this->getU() - this->getD());
+    return -(this->BondRet(step)*this->getD(step))/(this->getU(step) - this->getD(step));
 }
 
 // Getters
@@ -53,21 +53,21 @@ double OptionPricing::getS()
 {
     return S;
 }
-double OptionPricing::getU()
+double OptionPricing::getU(int step)
 {
-    return U;
+    return U->getAt(step);
 }
-double OptionPricing::getD()
+double OptionPricing::getD(int step)
 {
-    return D;
+    return D->getAt(step);
 }
 double OptionPricing::getDeltaT()
 {
     return DeltaT;
 }
-double* OptionPricing::getR()
+double OptionPricing::getR(int step)
 {
-    return R;
+    return R->getAt(step);
 }
 double OptionPricing::getK()
 {
@@ -79,11 +79,11 @@ void OptionPricing::setS(double val)
 {
     S = val;
 }
-void OptionPricing::setU(double val)
+void OptionPricing::setU(OptionPricing::FloatGetter val)
 {
     U = val;
 }
-void OptionPricing::setD(double val)
+void OptionPricing::setD(OptionPricing::FloatGetter val)
 {
     D = val;
 }
@@ -91,7 +91,7 @@ void OptionPricing::setDeltaT(double val)
 {
     DeltaT = val;
 }
-void OptionPricing::setR(double *val)
+void OptionPricing::setR(OptionPricing::FloatGetter val)
 {
     R = val;
 }
@@ -103,7 +103,7 @@ void OptionPricing::setK(double val)
 // Basic Returns
 double OptionPricing::BondRet(int step)
 {
-    return exp(-this->getR()[step]*this->getDeltaT());
+    return exp(-this->getR(step)*this->getDeltaT());
 }
 
 // Stock Prices
@@ -122,10 +122,10 @@ double * OptionPricing::StockPrice()
         nextStep = new double[i+2];
 
         for (int j = 0; j <= i; j++) {
-            nextStep[j] = currStep[j]*this->getU();
+            nextStep[j] = currStep[j]*this->getU(i);
         }
 
-        nextStep[i+1] = currStep[i]*this->getD();
+        nextStep[i+1] = currStep[i]*this->getD(i);
 
         delete[] currStep;
         currStep = nextStep;
@@ -152,12 +152,12 @@ double * OptionPricing::BondPrice()
 double OptionPricing::Price1(int step)
 {
     //return this->Alpha1()*this->StockPrice() + this->Beta1()*this->BondPrice();
-    return (exp(-this->getR()[step]*this->getDeltaT())*this->getU()-1)/(this->getU()-this->getD());
+    return (exp(-this->getR(step)*this->getDeltaT())*this->getU(step)-1)/(this->getU(step)-this->getD(step));
 }
 double OptionPricing::Price2(int step)
 {
     // return this->Alpha2()*this->StockPrice() + this->Beta2()*this->BondPrice();
-    return (1-exp(-this->getR()[step]*this->getDeltaT())*this->getD())/(this->getU()-this->getD());
+    return (1-exp(-this->getR(step)*this->getDeltaT())*this->getD(step))/(this->getU(step)-this->getD(step));
 }
 
 double OptionPricing::PriceSecurity(double a[], int step)
@@ -212,7 +212,7 @@ void OptionPricing::PriceOptionHelper(OptionKind kind, OptionStyle style, double
 
         for (int j = 0; j < i; j++) {
 
-            prevStock[j] = currStock[j]/this->getU();
+            prevStock[j] = currStock[j]/this->getU(i);
             prevEU[j] = this->Price2(i-1)*currEU[j]+this->Price1(i-1)*currEU[j+1];
 
             exNow = kind*(prevStock[j]-K);

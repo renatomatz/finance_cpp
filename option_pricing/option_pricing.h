@@ -1,8 +1,11 @@
-#include <iostream>
+#pragma once
+
 #include <algorithm>
 #include <cmath>
 #include <unordered_map>
 #include <set>
+
+#include "ts_getters.h"
 
 using namespace std;
 
@@ -38,72 +41,72 @@ unordered_map<string, OptionStyle> OptionStyleStringMap {
 
 
 // Classes
-class OptionPricing
+struct OptionPricing
 {
-     private:
 
-        void init(double S, double U, double D, double DeltaT, double *R);
+ typedef _TSGetter<float> *FloatGetter;
 
-        double      S;
-        double      U;
-        double      D;
-        double      DeltaT;
+ private:
 
-        double      *R;
+    void init(double S, FloatGetter U, FloatGetter D, double DeltaT, FloatGetter R);
 
-        double      K;
+    double          S;
+    FloatGetter     U;
+    FloatGetter     D;
+    double          DeltaT;
+    FloatGetter     R;
+    double          K;
 
-        unordered_map<OptionStyle, double> cache_;
-        void  ClearCache();
+    unordered_map<OptionStyle, double> cache_;
+    void  ClearCache();
 
-        int Check();
+    int Check();
 
-        double Alpha1();
-        double Alpha2();
+    double Alpha1(int step);
+    double Alpha2(int step);
 
-        double Beta1(int step);
-        double Beta2(int step);
+    double Beta1(int step);
+    double Beta2(int step);
 
-        void PriceOptionHelper(OptionKind kind, OptionStyle style, double K, unsigned char opts);
-        double PriceFuturesHelper(double K);
-        
-    public:
-        OptionPricing(double S, double U, double D, double DeltaT, double *R);
-        OptionPricing(double S, double U, double D, double DeltaT, double R);
-        OptionPricing();
-        ~OptionPricing();
-        
-        double      getS();
-        double      getU();
-        double      getD();
-        double      getDeltaT();
-        double*     getR();
-        double     getR(int step);
-        double      getK();
+    void PriceOptionHelper(OptionKind kind, OptionStyle style, double K, unsigned char opts);
+    double PriceFuturesHelper(double K);
+    
+public:
 
-        void        setS(double val);
-        void        setU(double val);
-        void        setD(double val);
-        void        setDeltaT(double val);
-        void        setR(double *val);
-        void        setK(double val);
+    OptionPricing(double S, FloatGetter U, FloatGetter D, double DeltaT, FloatGetter R);
+    OptionPricing();
+    ~OptionPricing();
+    
+    double      getS();
+    double      getU(int step);
+    double      getD(int step);
+    double      getR(int step);
+    double      getDeltaT();
+    double      getK();
 
-        double BondRet(int step);
+    void        setS(double val);
+    void        setU(FloatGetter val);
+    void        setD(FloatGetter val);
+    void        setDeltaT(double val);
+    void        setR(FloatGetter val);
+    void        setK(double val);
 
-        double* StockPrice();
-        double* BondPrice();
+    double BondRet(int step);
 
-        double Price1(int step);
-        double Price2(int step);
+    double* StockPrice();
+    double* BondPrice();
 
-        double PriceSecurity(double a[], int step);
+    double Price1(int step);
+    double Price2(int step);
 
-        double PriceOption(OptionKind kind, OptionStyle style, double K, unsigned char opts);
-        double PriceOption(OptionKind kind, OptionStyle style, unsigned char opts);
+    double PriceSecurity(double a[], int step);
 
-        double PriceOption(OptionKind kind, OptionStyle style, double K);
-        double PriceOption(OptionKind kind, OptionStyle style);
+    double PriceOption(OptionKind kind, OptionStyle style, double K, unsigned char opts);
+    double PriceOption(OptionKind kind, OptionStyle style, unsigned char opts);
 
-        double PriceFutures(double K);
-        double PriceFutures();
+    double PriceOption(OptionKind kind, OptionStyle style, double K);
+    double PriceOption(OptionKind kind, OptionStyle style);
+
+    double PriceFutures(double K);
+    double PriceFutures();
 };
